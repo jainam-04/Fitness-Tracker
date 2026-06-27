@@ -1076,5 +1076,3 @@ Frontend runs at: `http://localhost:3000`
 | No sensitive fields in responses | `password` and `refreshToken` use `select: false` in Mongoose |
 
 ---
-
-*Built for Fourise Software Solutions Pvt. Ltd. — CIN: U62099PN2023PTC218917*
