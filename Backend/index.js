@@ -1,9 +1,9 @@
-// const dns = require('dns');
-// dns.setServers(['8.8.8.8', '1.1.1.1']);
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const express = require('express');
 const app = express();
-// const userRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/authRoutes');
 app.use(express.json());
 require('dotenv').config();
 const cors = require('cors');
@@ -17,7 +17,7 @@ mongoose.connect(process.env.MONGO_DB_URI).then(() => {
       console.log("Database connection failed error: ", error);
 });
 
-// app.use("/auth", userRoutes);
+app.use("/auth", userRoutes);
 
 const port = process.env.PORT || 5000;
 
