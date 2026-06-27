@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register — AppName</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f1117;
+      --surface:   #1a1d27;
+      --border:    #2a2d3e;
+      --indigo:    #6366f1;
+      --indigo-h:  #4f52d4;
+      --text:      #e8eaf0;
+      --muted:     #7c7f96;
+      --error:     #f87171;
+      --success:   #34d399;
+      --radius:    10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .split {
+      display: flex;
+      width: 100%;
+      max-width: 900px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      border: 1px solid var(--border);
+    }
+
+    /* Left panel */
+    .panel-brand {
+      flex: 1;
+      background: linear-gradient(145deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel-brand::before {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
+      top: -80px; right: -80px;
+    }
+    .panel-brand::after {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+      bottom: -40px; left: -40px;
+    }
+    .brand-logo {
+      width: 48px; height: 48px;
+      background: var(--indigo);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+      position: relative; z-index: 1;
+    }
+    .brand-logo svg { width: 26px; height: 26px; }
+    .panel-brand h1 {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 16px;
+      position: relative; z-index: 1;
+    }
+    .panel-brand p {
+      color: rgba(232,234,240,0.65);
+      font-size: 15px;
+      line-height: 1.6;
+      position: relative; z-index: 1;
+    }
+    .steps {
+      margin-top: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative; z-index: 1;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(99,102,241,0.25);
+      border: 1px solid rgba(99,102,241,0.5);
+      color: var(--indigo);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-text strong { display: block; font-size: 14px; margin-bottom: 2px; }
+    .step-text span   { font-size: 13px; color: var(--muted); }
+
+    /* Right panel */
+    .panel-form {
+      flex: 1;
+      background: var(--surface);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .form-header { margin-bottom: 28px; }
+    .form-header h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .form-header p { color: var(--muted); font-size: 14px; }
+
+    .form-row { display: flex; gap: 16px; }
+    .form-row .form-group { flex: 1; }
+    .form-group { margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 7px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--indigo); }
+    input::placeholder { color: var(--muted); }
+
+    .input-wrap { position: relative; }
+    .toggle-pw {
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: var(--muted);
+      background: none; border: none;
+      display: flex; align-items: center;
+    }
+    .toggle-pw:hover { color: var(--text); }
+
+    .strength-bar {
+      display: flex; gap: 4px; margin-top: 8px;
+    }
+    .strength-bar span {
+      flex: 1; height: 3px; border-radius: 99px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .strength-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--indigo);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:hover { background: var(--indigo-h); }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .form-footer { text-align: center; font-size: 14px; color: var(--muted); margin-top: 20px; }
+    .form-footer a { color: var(--indigo); text-decoration: none; font-weight: 500; }
+    .form-footer a:hover { text-decoration: underline; }
+
+    .terms {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+    .terms a { color: var(--indigo); text-decoration: none; }
+
+    .alert {
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      margin-bottom: 18px;
+      display: none;
+    }
+    .alert.error   { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: var(--error); }
+    .alert.success { background: rgba(52,211,153,0.1);  border: 1px solid rgba(52,211,153,0.3);  color: var(--success); }
+    .alert.show    { display: block; }
+
+    .spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 640px) {
+      .panel-brand { display: none; }
+      .panel-form  { padding: 32px 20px; }
+      .form-row    { flex-direction: column; gap: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="split">
+  <!-- Brand Panel -->
+  <div class="panel-brand">
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <h1>Get started<br/>in seconds.</h1>
+    <p>Join the platform and get access to your personalised dashboard right away.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <strong>Create your account</strong>
+          <span>Fill in your basic details below</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <strong>Sign in</strong>
+          <span>Use your credentials to log in</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <strong>Access your dashboard</strong>
+          <span>Your role is automatically detected</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Panel -->
+  <div class="panel-form">
+    <div class="form-header">
+      <h2>Create an account</h2>
+      <p>Fill in your details to get started</p>
+    </div>
+
+    <div id="alert" class="alert"></div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="name">Full name</label>
+        <input type="text" id="name" placeholder="John Doe" autocomplete="name"/>
+      </div>
+      <div class="form-group">
+        <label for="contact">Phone number</label>
+        <input type="tel" id="contact" placeholder="+91 98765 43210" autocomplete="tel"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email address</label>
+      <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <div class="input-wrap">
+        <input type="password" id="password" placeholder="Min. 8 characters" autocomplete="new-password" oninput="checkStrength(this.value)"/>
+        <button class="toggle-pw" onclick="togglePw()" type="button" title="Show/hide password">
+          <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="strength-bar">
+        <span id="s1"></span><span id="s2"></span><span id="s3"></span><span id="s4"></span>
+      </div>
+      <div class="strength-label" id="strength-label"></div>
+    </div>
+
+    <button class="btn" id="registerBtn" onclick="handleRegister()">Create account</button>
+
+    <div class="terms">
+      By registering, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+    </div>
+
+    <div class="form-footer">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Config ───────────────────────────────────────────────
+  const API_BASE = 'http://localhost:5000'; // change to your backend URL
+
+  // ── Password visibility ──────────────────────────────────
+  function togglePw() {
+    const input = document.getElementById('password');
+    const icon  = document.getElementById('eye-icon');
+    const show  = input.type === 'password';
+    input.type  = show ? 'text' : 'password';
+    icon.innerHTML = show
+      ? `<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`
+      : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+  }
+
+  // ── Strength meter ───────────────────────────────────────
+  const colors = ['#f87171','#fb923c','#facc15','#34d399'];
+  const labels = ['Weak','Fair','Good','Strong'];
+  function checkStrength(pw) {
+    let score = 0;
+    if (pw.length >= 8)            score++;
+    if (/[A-Z]/.test(pw))         score++;
+    if (/[0-9]/.test(pw))         score++;
+    if (/[^A-Za-z0-9]/.test(pw))  score++;
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById(`s${i}`).style.background = i <= score ? colors[score-1] : 'var(--border)';
+    }
+    document.getElementById('strength-label').textContent = pw.length ? labels[score-1] || '' : '';
+    document.getElementById('strength-label').style.color = pw.length ? colors[score-1] : 'var(--muted)';
+  }
+
+  // ── Alert helper ─────────────────────────────────────────
+  function showAlert(msg, type) {
+    const el = document.getElementById('alert');
+    el.textContent = msg;
+    el.className   = `alert ${type} show`;
+  }
+  function hideAlert() { document.getElementById('alert').className = 'alert'; }
+
+  // ── Register ─────────────────────────────────────────────
+  async function handleRegister() {
+    hideAlert();
+    const name     = document.getElementById('name').value.trim();
+    const contact  = document.getElementById('contact').value.trim();
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('registerBtn');
+
+    if (!name || !contact || !email || !password) {
+      return showAlert('Please fill in all fields.', 'error');
+    }
+    if (password.length < 8) {
+      return showAlert('Password must be at least 8 characters.', 'error');
+    }
+
+    btn.disabled  = true;
+    btn.innerHTML = '<span class="spinner"></span>Creating account…';
+
+    try {
+      await axios.post(`${API_BASE}/auth/register`, { name, email, password, contact });
+      showAlert('Account created! Redirecting to login…', 'success');
+      setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Registration failed. Please try again.';
+      showAlert(msg, 'error');
+      btn.disabled  = false;
+      btn.innerHTML = 'Create account';
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleRegister();
+  });
+</script>
+</body>
+</html>
